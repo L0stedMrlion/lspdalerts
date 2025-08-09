@@ -3,8 +3,6 @@ const METRO_ALERT_RECIPIENTS = [
   "769892516152999957", // Petr
   "1127193593023582308", // asi_tade
   "1025072087548821625", // Iamanti
-  "860121233260675103", // tadeas
-  "935588466614493204", // respectic
   "909006358928580649", // tickly
   "1102635783095066705", // studiosmile
   "282485014120235008", // fjury
@@ -14,6 +12,8 @@ const METRO_ALERT_RECIPIENTS = [
   "1064535391773917225", // lokicek
   "824562833551261706", // lemon
   "1355789979032358952", // tobi
+  "427439278382120973", // Tomcaik
+  "888762155434909716", // Aertic
 ];
 
 const {
@@ -154,3 +154,4 @@ module.exports = {
     deleted: false,
   },
 };
+
