@@ -1,11 +1,11 @@
 const Detective_ALERT_RECIPIENTS = [
   "735501561819824218", // Gariffi
-  "1274772842696671302", // Lenny
   "710549603216261141", // Mrlion
   "892296560845660212", // pentyyy
   "769892516152999957", // petrpetr
   "980537680586739732", // Rákos
   "621756890610663424", // vojta
+  "432501487361327114", // Dezzy
 ];
 
 const {
@@ -113,3 +113,4 @@ module.exports = {
     deleted: false,
   },
 };
+
