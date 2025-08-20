@@ -9,7 +9,6 @@ const METRO_ALERT_RECIPIENTS = [
   "813676593968709642", // adambzonek
   "752526572841599107", // maty
   "764121947851456512", // martqx
-  "1064535391773917225", // lokicek
   "824562833551261706", // lemon
   "1355789979032358952", // tobi
   "427439278382120973", // Tomcaik
@@ -154,4 +153,5 @@ module.exports = {
     deleted: false,
   },
 };
+
 
