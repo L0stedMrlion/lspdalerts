@@ -4,113 +4,72 @@ const Detective_ALERT_RECIPIENTS = [
   "892296560845660212", // pentyyy
   "769892516152999957", // petrpetr
   "980537680586739732", // Rákos
-  "621756890610663424", // vojta
+  "621756890610663424", // Vojtarobux
   "432501487361327114", // Dezzy
 ];
 
 const {
+  SlashCommandBuilder,
   MessageFlags,
   TextDisplayBuilder,
-  ButtonBuilder,
-  ButtonStyle,
   ThumbnailBuilder,
   SectionBuilder,
-  ActionRowBuilder,
-  ModalBuilder,
-  TextInputStyle,
-  TextInputBuilder,
 } = require("discord.js");
 
 module.exports = {
-  data: {
-    name: "alertdetectives",
-    description: "Send Detective Alert to all designated users via DM",
-  },
+  data: new SlashCommandBuilder()
+    .setName("alertdetectives")
+    .setDescription("Send Detective Alert to all designated users via DM")
+    .addStringOption(option =>
+      option
+        .setName("reason")
+        .setDescription("Reason for Detective Alert")
+        .setRequired(true)
+    ),
 
-  run: async ({ interaction, client, handler }) => {
-    const modal = new ModalBuilder()
-      .setCustomId("Detective-alert-modal")
-      .setTitle("Detective Alert");
+  run: async ({ interaction, client }) => {
+    const reason = interaction.options.getString("reason");
 
-    const reasonInput = new TextInputBuilder()
-      .setCustomId("reason")
-      .setLabel("Reason for Detective Alert")
-      .setStyle(TextInputStyle.Paragraph)
-      .setMaxLength(1000)
-      .setPlaceholder("Enter the reason for this Detective Alert...")
-      .setRequired(true);
+    let successCount = 0;
+    let failCount = 0;
 
-    const firstActionRow = new ActionRowBuilder().addComponents(reasonInput);
-    modal.addComponents(firstActionRow);
+    const textComponent = new TextDisplayBuilder().setContent(
+      `# 🕵️ Detective Alert\nTím jste obdržel/a Detective Alert z důvodu, že **${reason}**.\n\nInformace, které jste obdržel/a nikomu **nesdělujte!** V případě, že jste dostupný/á tak prosím neprodleně respondujte.\n\nAlert byl zaslán od <@${interaction.user.id}>`
+    );
 
-    await interaction.showModal(modal);
+    const thumbnailComponent = new ThumbnailBuilder({
+      media: {
+        url: "https://cdn.discordapp.com/attachments/1287133753356980329/1369780833501839381/detectivebureau-removebg-preview.png?ex=681d1b50&is=681bc9d0&hm=b7245525798fc72b5dc6004d9f5f7e35917ae9067ed8eb0b51e9ada273d2231e&",
+      },
+    });
 
-    const filter = (i) => i.customId === "Detective-alert-modal";
-    try {
-      const submission = await interaction.awaitModalSubmit({
-        filter,
-        time: 60000,
-      });
+    const sectionComponent = new SectionBuilder()
+      .addTextDisplayComponents(textComponent)
+      .setThumbnailAccessory(thumbnailComponent);
 
-      const reason = submission.fields.getTextInputValue("reason");
-
-      let successCount = 0;
-      let failCount = 0;
-
-      const textComponent = new TextDisplayBuilder().setContent(
-        `# 🕵️ Detective Alert\nTím jste obdržel/a Detective Alert z důvodu, že **${reason}**.\n\nInformace, které jste obdržel/a nikomu **nesdělujte!** V případě, že jste dostupný/á tak prosím neprodleně respondujte.\n\nAlert byl zaslán od <@${interaction.user.id}>`
-      );
-
-      const button = new ButtonBuilder()
-        .setLabel("🦁 Připojit se na Lion Police RP")
-        .setStyle(ButtonStyle.Link)
-        .setURL("https://cfx.re/join/z84ej5");
-
-      const thumbnailComponent = new ThumbnailBuilder({
-        media: {
-          url: "https://cdn.discordapp.com/attachments/1287133753356980329/1369780833501839381/detectivebureau-removebg-preview.png?ex=681d1b50&is=681bc9d0&hm=b7245525798fc72b5dc6004d9f5f7e35917ae9067ed8eb0b51e9ada273d2231e&",
-        },
-      });
-
-      const actionRow = new ActionRowBuilder().addComponents(button);
-
-      const sectionComponent = new SectionBuilder()
-        .addTextDisplayComponents(textComponent)
-        .setThumbnailAccessory(thumbnailComponent);
-
-      for (const userId of Detective_ALERT_RECIPIENTS) {
-        try {
-          const user = await client.users.fetch(userId);
-          await user.send({
-            flags: MessageFlags.IsComponentsV2,
-            components: [sectionComponent, actionRow],
-          });
-          successCount++;
-        } catch (error) {
-          console.error(`Failed to send DM to user ${userId}:`, error);
-          failCount++;
-        }
-      }
-
-      await submission.reply({
-        content: `✅ Detective Alert sent to ${successCount} users${
-          failCount > 0 ? ` (Failed to send to ${failCount} users)` : ""
-        }.`,
-        flags: MessageFlags.Ephemeral,
-      });
-    } catch (error) {
-      console.error("Modal submission error:", error);
-      if (error.code === "InteractionCollectorError") {
-        await interaction.followUp({
-          content: "❌ Modal timed out. Please try again.",
-          flags: MessageFlags.Ephemeral,
+    for (const userId of Detective_ALERT_RECIPIENTS) {
+      try {
+        const user = await client.users.fetch(userId);
+        await user.send({
+          flags: MessageFlags.IsComponentsV2,
+          components: [sectionComponent],
         });
+        successCount++;
+      } catch (error) {
+        console.error(`Failed to send DM to user ${userId}:`, error);
+        failCount++;
       }
     }
+
+    await interaction.reply({
+      content: `✅ Detective Alert sent to ${successCount} users${
+        failCount > 0 ? ` (Failed to send to ${failCount} users)` : ""
+      }.`,
+      flags: MessageFlags.Ephemeral,
+    });
   },
   options: {
     devOnly: false,
     deleted: false,
   },
 };
-
