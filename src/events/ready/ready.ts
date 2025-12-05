@@ -6,13 +6,9 @@ export default (c: Client<true>, client: Client<true>, handler: CommandKit) => {
 
   const statuses = [
     { name: `🚨 All alerts`, type: ActivityType.Watching },
-    { name: `🚇 Metro updates`, type: ActivityType.Watching },
-    { name: `⚠️ Service disruptions`, type: ActivityType.Listening },
-    { name: `🚦 Traffic alerts`, type: ActivityType.Watching },
-    { name: `📍 Your commute`, type: ActivityType.Watching },
-    { name: `� Real-time notifications`, type: ActivityType.Listening },
-    { name: `🗺️ Transit status`, type: ActivityType.Playing },
-    { name: `🚉 Station updates`, type: ActivityType.Watching },
+    { name: `🥷 Metro alerts`, type: ActivityType.Watching },
+    { name: `⚠️ Service disruptions`, type: ActivityType.Watching },
+    { name: `🕵️ Detective alerts`, type: ActivityType.Watching },
   ];
 
   let currentIndex = 0;
@@ -24,3 +20,4 @@ export default (c: Client<true>, client: Client<true>, handler: CommandKit) => {
     client.user.setActivity(statuses[currentIndex]);
   }, 30000);
 };
+
