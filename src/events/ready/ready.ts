@@ -7,7 +7,6 @@ export default (c: Client<true>, client: Client<true>, handler: CommandKit) => {
   const statuses = [
     { name: `🚨 All alerts`, type: ActivityType.Watching },
     { name: `🥷 Metro alerts`, type: ActivityType.Watching },
-    { name: `⚠️ Service disruptions`, type: ActivityType.Watching },
     { name: `🕵️ Detective alerts`, type: ActivityType.Watching },
   ];
 
@@ -18,6 +17,6 @@ export default (c: Client<true>, client: Client<true>, handler: CommandKit) => {
   setInterval(() => {
     currentIndex = (currentIndex + 1) % statuses.length;
     client.user.setActivity(statuses[currentIndex]);
-  }, 30000);
+  }, 600000);
 };
 
