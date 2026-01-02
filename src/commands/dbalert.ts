@@ -27,6 +27,7 @@ export const data: CommandData = {
 };
 
 export async function run({ interaction, client }: SlashCommandProps) {
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
   const reason = interaction.options.getString("reason");
 
   if (!reason) {
@@ -66,13 +67,12 @@ export async function run({ interaction, client }: SlashCommandProps) {
       failCount++;
     }
   }
-
-  await interaction.reply({
-    content: `✅ Detective Alert sent to ${successCount} users${
+  
+  await interaction.editReply(
+    `✅ Detective Alert sent to ${successCount} users${
       failCount > 0 ? ` (Failed to send to ${failCount} users)` : ""
-    }.`,
-    flags: MessageFlags.Ephemeral,
-  });
+    }`
+  );
 }
 
 export const options: CommandOptions = {
