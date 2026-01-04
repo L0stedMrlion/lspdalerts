@@ -27,6 +27,7 @@ export const data: CommandData = {
 };
 
 export async function run({ interaction, client }: SlashCommandProps) {
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
   const guild = await client.guilds.fetch(GUILD_ID).catch(() => null);
   if (!guild)
     return interaction.reply({
@@ -93,12 +94,9 @@ export async function run({ interaction, client }: SlashCommandProps) {
     }
   }
 
-  await interaction.reply({
-    content: `✅ Metro Alert sent to ${successCount} users${
-      failCount > 0 ? ` (Failed to send to ${failCount} users)` : ""
-    }.`,
-    flags: MessageFlags.Ephemeral,
-  });
+  await interaction.editReply( `✅ Metro Alert sent to ${successCount} users${
+      failCount > 0 ? ` (Failed to send to ${failCount} users).` : ""
+    }`);  
 }
 
 export const options: CommandOptions = {
