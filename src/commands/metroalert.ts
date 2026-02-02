@@ -9,13 +9,19 @@ import type {
   SlashCommandProps,
   CommandOptions,
 } from "commandkit";
-import config from "../config.json";
 
-const { METRO_ALERT_RECIPIENTS, GUILD_ID, ALLOWED_ROLE_IDS } = config;
+const GUILD_ID = "1350602855798669382";
+const METRO_ROLE_ID = "1467806169220513852";
+const ALLOWED_ROLE_IDS = [
+  "1350606847069130752",
+  "1350606971954266184",
+  "1350607131006468198",
+  "1390949498376945724",
+];
 
 export const data: CommandData = {
   name: "alertmetro",
-  description: "Send Metro Alert to all designated users via DM",
+  description: "Send Metro Alert to all users with specific role via DM",
   options: [
     {
       name: "reason",
@@ -28,42 +34,57 @@ export const data: CommandData = {
 
 export async function run({ interaction, client }: SlashCommandProps) {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
   const guild = await client.guilds.fetch(GUILD_ID).catch(() => null);
   if (!guild)
-    return interaction.reply({
+    return interaction.editReply({
       content: "❌ Cannot access the guild.",
-      flags: MessageFlags.Ephemeral,
     });
 
   const member = await guild.members
     .fetch(interaction.user.id)
     .catch(() => null);
   if (!member)
-    return interaction.reply({
+    return interaction.editReply({
       content: "❌ You are not a member of the guild.",
-      flags: MessageFlags.Ephemeral,
     });
 
   const hasPermission = member.roles.cache.some((role) =>
     ALLOWED_ROLE_IDS.includes(role.id)
   );
   if (!hasPermission) {
-    return interaction.reply({
+    return interaction.editReply({
       content: "🚫 You do not have permission to use this command.",
-      flags: MessageFlags.Ephemeral,
     });
   }
 
   const reason = interaction.options.getString("reason");
 
   if (!reason) {
-    return interaction.reply({
+    return interaction.editReply({
       content: "❌ Please provide a reason for the alert.",
-      flags: MessageFlags.Ephemeral,
     });
   }
 
-  let successCount = 0;
+  const allMembers = await guild.members.fetch().catch(() => null);
+
+  if (!allMembers) {
+    return interaction.editReply({
+      content: "❌ Failed to fetch guild members.",
+    });
+  }
+
+  const membersWithRole = allMembers.filter((m) =>
+    m.roles.cache.has(METRO_ROLE_ID)
+  );
+
+  if (membersWithRole.size === 0) {
+    return interaction.editReply({
+      content: "❌ No users found with the specified role.",
+    });
+  }
+
+  let successList: string[] = [];
   let failCount = 0;
 
   const textComponent = new TextDisplayBuilder().setContent(
@@ -80,23 +101,29 @@ export async function run({ interaction, client }: SlashCommandProps) {
     .addTextDisplayComponents(textComponent)
     .setThumbnailAccessory(thumbnailComponent);
 
-  for (const userId of METRO_ALERT_RECIPIENTS) {
+  for (const [userId, targetMember] of membersWithRole) {
     try {
-      const user = await client.users.fetch(userId);
-      await user.send({
+      await targetMember.send({
         flags: MessageFlags.IsComponentsV2,
         components: [sectionComponent],
       });
-      successCount++;
+      successList.push(`<@${userId}>`);
     } catch (error) {
       console.error(`Failed to send DM to user ${userId}:`, error);
       failCount++;
     }
   }
 
-  await interaction.editReply( `✅ Metro Alert sent to ${successCount} users${
-      failCount > 0 ? ` (Failed to send to ${failCount} users).` : ""
-    }`);  
+  const resultMessage = `✅ Metro Alert sent to ${successList.length} users:\n${successList.join(", ")}${
+    failCount > 0 ? `\n\n(Failed to send to ${failCount} users).` : ""
+  }`;
+
+  await interaction.editReply({
+    content:
+      resultMessage.length > 2000
+        ? resultMessage.substring(0, 1997) + "..."
+        : resultMessage,
+  });
 }
 
 export const options: CommandOptions = {
