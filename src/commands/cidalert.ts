@@ -74,7 +74,6 @@ export async function run({ interaction, client }: SlashCommandProps) {
     });
   }
 
-  // Fetch all members from the DETECTIVE guild and filter for those with the specific role
   const allMembers = await guild.members.fetch().catch(() => null);
 
   if (!allMembers) {
@@ -102,7 +101,7 @@ export async function run({ interaction, client }: SlashCommandProps) {
 
   const thumbnailComponent = new ThumbnailBuilder({
     media: {
-      url: "https://cdn.discordapp.com/attachments/1287133753356980329/1369780833501839381/detectivebureau-removebg-preview.png?ex=681d1b50&is=681bc9d0&hm=b7245525798fc72b5dc6004d9f5f7e35917ae9067ed8eb0b51e9ada273d2231e&",
+      url: "https://cdn.discordapp.com/icons/1313589265195864074/76abd02a3e9bc372eb1a4c597fa9c5a1.webp?size=1024",
     },
   });
 
