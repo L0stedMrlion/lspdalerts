@@ -20,7 +20,7 @@ const ALLOWED_ROLE_IDS = [
 ];
 
 export const data: CommandData = {
-  name: "alertdetectives",
+  name: "alertcid",
   description: "Send Detective Alert to all users with specific role via DM",
   options: [
     {
