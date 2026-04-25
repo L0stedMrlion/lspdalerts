@@ -2,25 +2,26 @@
   "name": "lspdalertbot",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/app/index.js",
   "scripts": {
-    "start": "node .",
-    "dev": "tsx src/index.ts",
+    "start": "cross-env COMMANDKIT_IS_CLI=true node dist/app/index.js",
+    "dev": "commandkit dev",
     "build": "tsc",
     "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
-    "commandkit": "^0.1.6",
+    "commandkit": "^1.2.1",
     "discord.js": "^14.19.3",
     "dotenv": "^16.5.0",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "cross-env": "^10.1.0",
     "tsx": "^4.21.0"
   }
 }

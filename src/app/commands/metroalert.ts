@@ -1,17 +1,17 @@
 import {
-  MessageFlags,
   TextDisplayBuilder,
   ThumbnailBuilder,
   SectionBuilder,
 } from "discord.js";
+import { MessageFlags } from "discord-api-types/v10";
 import type {
   CommandData,
-  SlashCommandProps,
-  CommandOptions,
+  ChatInputCommandContext,
+  CommandMetadata,
 } from "commandkit";
 
-const GUILD_ID = "1313589265195864074";
-const DETECTIVE_ROLE_ID = "1320317608494370846";
+const GUILD_ID = "1350602855798669382";
+const METRO_ROLE_ID = "1467806169220513852";
 const ALLOWED_ROLE_IDS = [
   "1350606847069130752",
   "1350606971954266184",
@@ -19,20 +19,21 @@ const ALLOWED_ROLE_IDS = [
   "1390949498376945724",
 ];
 
-export const data: CommandData = {
-  name: "alertcid",
-  description: "Send CID Alert to all users with specific role via DM",
+export const command: CommandData = {
+  name: "alertmetro",
+  description: "Send Metro Alert to all users with specific role via DM",
   options: [
     {
       name: "reason",
-      description: "Reason for CID Alert",
+      description: "Reason for the Metro Alert",
       type: 3,
       required: true,
     },
   ],
 };
 
-export async function run({ interaction, client }: SlashCommandProps) {
+export const chatInput = async (ctx: ChatInputCommandContext) => {
+  const { interaction, client } = ctx;
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
   const guild = await client.guilds.fetch(GUILD_ID).catch(() => null);
@@ -41,25 +42,17 @@ export async function run({ interaction, client }: SlashCommandProps) {
       content: "❌ Cannot access the guild.",
     });
 
-  const permissionGuildId = "1350602855798669382";
-  const permGuild = await client.guilds
-    .fetch(permissionGuildId)
+  const member = await guild.members
+    .fetch(interaction.user.id)
     .catch(() => null);
-
-  const member = permGuild
-    ? await permGuild.members.fetch(interaction.user.id).catch(() => null)
-    : null;
-
-  if (!member) {
+  if (!member)
     return interaction.editReply({
-      content: "❌ You are not a authorized member of the primary guild.",
+      content: "❌ You are not a member of the guild.",
     });
-  }
 
   const hasPermission = member.roles.cache.some((role) =>
     ALLOWED_ROLE_IDS.includes(role.id)
   );
-
   if (!hasPermission) {
     return interaction.editReply({
       content: "🚫 You do not have permission to use this command.",
@@ -78,12 +71,12 @@ export async function run({ interaction, client }: SlashCommandProps) {
 
   if (!allMembers) {
     return interaction.editReply({
-      content: "❌ Failed to fetch guild members from the detective guild.",
+      content: "❌ Failed to fetch guild members.",
     });
   }
 
   const membersWithRole = allMembers.filter((m) =>
-    m.roles.cache.has(DETECTIVE_ROLE_ID)
+    m.roles.cache.has(METRO_ROLE_ID)
   );
 
   if (membersWithRole.size === 0) {
@@ -95,13 +88,27 @@ export async function run({ interaction, client }: SlashCommandProps) {
   let successList: string[] = [];
   let failCount = 0;
 
+  const senderMember = interaction.member;
+  const rawDisplayName =
+    senderMember && "displayName" in senderMember
+      ? senderMember.displayName
+      : (senderMember as any)?.nick ||
+        interaction.user.displayName ||
+        interaction.user.username;
+
+  const senderName = rawDisplayName
+    .replace(/^\s*\[.*?\]\s*/, "")
+    .replace(/\s*\[.*?\]\s*$/, "")
+    .replace(/\s*\(.*?\)$/, "")
+    .trim();
+
   const textComponent = new TextDisplayBuilder().setContent(
-    `# 🕵️ Detective Alert\nTím jste obdržel/a Detective Alert z důvodu, že **${reason}**.\n\nInformace, které jste obdržel/a nikomu **nesdělujte!** V případě, že jste dostupný/á tak prosím neprodleně respondujte.\n\nAlert byl zaslán od <@${interaction.user.id}>`
+    `# 🥷 Metro Alert\nZdravím.\n\nTímto jste obdržel/a Metro Alert z důvodu, že **${reason}**.\n\nInformace, které jste obdržel/a nikomu **nesdělujte!** V případě, že jste dostupný/á tak prosím neprodleně respondujte.\n\nAlert byl zaslán od **${senderName}** <@${interaction.user.id}>`
   );
 
   const thumbnailComponent = new ThumbnailBuilder({
     media: {
-      url: "https://cdn.discordapp.com/icons/1313589265195864074/76abd02a3e9bc372eb1a4c597fa9c5a1.webp?size=1024",
+      url: "https://cdn.discordapp.com/attachments/1287133753356980329/1369776850716328086/hqdefault-removebg-preview.png?ex=681d179a&is=681bc61a&hm=7d099e07be279adc9bd83cf4d373eedc015bc13ef003b4bd2eceb12a0f8da5de&",
     },
   });
 
@@ -122,7 +129,7 @@ export async function run({ interaction, client }: SlashCommandProps) {
     }
   }
 
-  const resultMessage = `✅ Detective Alert sent to ${successList.length} users:\n${successList.join(", ")}${
+  const resultMessage = `✅ Metro Alert sent to ${successList.length} users:\n${successList.join(", ")}${
     failCount > 0 ? `\n\n(Failed to send to ${failCount} users).` : ""
   }`;
 
@@ -132,9 +139,11 @@ export async function run({ interaction, client }: SlashCommandProps) {
         ? resultMessage.substring(0, 1997) + "..."
         : resultMessage,
   });
-}
+};
 
-export const options: CommandOptions = {
-  devOnly: false,
-  deleted: false,
+export const metadata: CommandMetadata = {
+  guilds: [],
+  aliases: [],
+  userPermissions: [],
+  botPermissions: [],
 };
