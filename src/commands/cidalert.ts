@@ -21,11 +21,11 @@ const ALLOWED_ROLE_IDS = [
 
 export const data: CommandData = {
   name: "alertcid",
-  description: "Send Detective Alert to all users with specific role via DM",
+  description: "Send CID Alert to all users with specific role via DM",
   options: [
     {
       name: "reason",
-      description: "Reason for Detective Alert",
+      description: "Reason for CID Alert",
       type: 3,
       required: true,
     },
