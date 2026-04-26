@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/app/index.js",
-  "scripts": {
-    "start": "cross-env COMMANDKIT_IS_CLI=true node dist/app/index.js", 
-    "dev": "commandkit dev",
-    "build": "tsc",
-    "format": "prettier --write ."
-  },
+"scripts": {
+  "build": "rm -rf dist && tsc",
+  "start": "npm run build && cross-env COMMANDKIT_IS_CLI=true node dist/app/index.js",
+  "dev": "commandkit dev"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
