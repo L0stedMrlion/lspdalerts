@@ -4,9 +4,10 @@
   "description": "",
   "main": "dist/app/index.js",
 "scripts": {
-  "build": "rm -rf dist && tsc",
+  "clean": "rm -rf dist .commandkit",
+  "build": "npm run clean && tsc",
   "start": "npm run build && cross-env COMMANDKIT_IS_CLI=true node dist/app/index.js",
-  "dev": "commandkit dev"
+  "dev": "rm -rf .commandkit && commandkit dev"
 },
   "keywords": [],
   "author": "",
