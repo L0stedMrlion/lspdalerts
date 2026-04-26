@@ -3,9 +3,9 @@
     "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    /* Add or verify these: */
+    "outDir": "./dist", // Add this line!
+    "rootDir": "./src", // Ensure this points to your source files
     "declaration": true,
-    "composite": false, 
     "strict": true,
     "skipLibCheck": true 
   }
