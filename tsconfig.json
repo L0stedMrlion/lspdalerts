@@ -3,10 +3,11 @@
     "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "outDir": "./dist", // Add this line!
-    "rootDir": "./src", // Ensure this points to your source files
-    "declaration": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": false,
     "strict": true,
     "skipLibCheck": true 
-  }
+    },
+    "exclude": ["node_modules", "dist"]
 }
