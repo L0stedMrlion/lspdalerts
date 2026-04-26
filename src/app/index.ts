@@ -22,5 +22,11 @@ const client = new Client({
 const commandkit = new CommandKit({ client: client as any });
 
 if (process.env.COMMANDKIT_IS_CLI === "true") {
-  commandkit.start();
+  const token = process.env.DISCORD_TOKEN ?? process.env.TOKEN;
+
+  if (!token || typeof token !== "string") {
+    throw new Error("Missing Discord token. Set TOKEN or DISCORD_TOKEN in environment.");
+  }
+
+  commandkit.start(token);
 }
